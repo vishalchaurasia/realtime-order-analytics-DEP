@@ -1,0 +1,39 @@
+version: 2
+
+models:
+  - name: mart_daily_revenue
+    description: "Daily gross revenue aggregated by city and product category. Source of truth for revenue dashboards."
+    columns:
+      - name: order_date
+        tests:
+          - not_null
+      - name: city
+        tests:
+          - not_null
+      - name: gross_revenue
+        tests:
+          - not_null
+
+  - name: mart_top_products
+    description: "Product-level performance metrics including revenue rank and cancellation rate."
+    columns:
+      - name: product_id
+        tests:
+          - not_null
+          - unique
+      - name: revenue_rank
+        tests:
+          - not_null
+
+  - name: mart_order_funnel
+    description: "Order funnel breakdown by status, city, payment type, and value bucket."
+    columns:
+      - name: order_date
+        tests:
+          - not_null
+      - name: city
+        tests:
+          - not_null
+      - name: delivery_rate_pct
+        tests:
+          - not_null

@@ -1,0 +1,38 @@
+version: 2
+
+sources:
+  - name: raw
+    schema: raw
+    tables:
+      - name: orders
+        description: "Raw order events written by PySpark Structured Streaming from Kafka"
+        columns:
+          - name: order_id
+            description: "Unique identifier for each order"
+          - name: event_ts
+            description: "Timestamp of the order event from the producer"
+
+models:
+  - name: stg_orders
+    description: "Cleaned and standardised order events from raw.orders"
+    columns:
+      - name: order_id
+        description: "Unique order identifier"
+        tests:
+          - not_null
+          - unique
+      - name: user_id
+        tests:
+          - not_null
+      - name: amount
+        tests:
+          - not_null
+      - name: status
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+              values: ['placed', 'confirmed', 'shipped', 'delivered', 'cancelled']
+      - name: city
+        tests:
+          - not_null
