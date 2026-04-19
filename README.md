@@ -279,6 +279,88 @@ Live dashboard showing:
 
 ---
 
+## Complete Workflow
+
+### Four Essential Commands
+
+| Action | Command | What It Does | Duration |
+|--------|---------|--------------|----------|
+| **Start Everything** | `start_pipeline.bat` | Launches Docker → Producer → Spark → PostgreSQL setup | ~30s |
+| **Stop Everything** | `stop_pipeline.bat` | Gracefully shuts down all services (data preserved) | ~10s |
+| **Watch Live Counts** | `start_monitor.bat` | Real-time dashboard: events/sec, revenue, top cities | Continuous |
+| **Refresh Analytics** | `run_dbt.bat` | Transforms raw data → staging → intermediate → marts + tests | ~18s |
+
+### Typical Day-to-Day Usage
+
+```powershell
+# Morning: Start the pipeline
+start_pipeline.bat
+# ✅ Producer: Generating events
+# ✅ Spark: Reading from Kafka, writing to PostgreSQL
+# ✅ Monitors: Ready to watch
+
+# Mid-day: Check live metrics in separate terminal
+start_monitor.bat
+# 📊 Live dashboard appears
+
+# Evening: Run transformation
+run_dbt.bat
+# ✅ 6 models built
+# ✅ 16 tests passed
+# ✅ Analytics ready for BI
+
+# Night: Clean shutdown
+stop_pipeline.bat
+# ✅ All data saved, services stopped
+```
+
+---
+
+## What's Built in This Project
+
+### ✅ Completed Components
+
+**Event Generation**
+- Python producer simulating 5 events/second
+- 10 Indian cities (Mumbai, Delhi, Bengaluru, Hyderabad, Chennai, Pune, Kolkata, Ahmedabad, Jaipur, Lucknow)
+- 7 order attributes: order_id, user_id, product_id, amount, status, payment_method, city
+
+**Stream Ingestion**
+- PySpark Structured Streaming (batch mode, every 30 seconds)
+- Watermark-based deduplication on order_id
+- JDBC sink to PostgreSQL raw.orders table
+- Schema validation with type casting
+
+**Data Transformation**
+- 3-layer dbt architecture (staging → intermediate → marts)
+- 6 dbt models total
+- 16 automated data quality tests (all passing)
+- SQL-based transformations (no custom code)
+
+**Analytics Tables**
+- `mart_daily_revenue`: Revenue by date and city
+- `mart_order_funnel`: Order status distribution
+- `mart_top_products`: Product rankings by revenue
+
+**Monitoring & Observability**
+- Live Python monitor (events/sec, revenue, city rankings)
+- Log files per component (producer, spark, dbt)
+- Real-time ingestion metrics
+
+**Infrastructure**
+- Docker containerized Kafka + Zookeeper
+- PostgreSQL with raw + analytics schemas
+- Local mode setup (single machine, no cluster needed)
+
+### 📊 Live Metrics (Current State)
+- **40,439 orders** processed
+- **₹117.8M** gross revenue
+- **19,224 unique** transactions
+- **100%** data completeness
+- **100%** dbt test pass rate
+
+---
+
 ## dbt Transformation Layers
 
 ### 📦 Staging Layer (`stg_orders`)
@@ -545,51 +627,35 @@ start_pipeline.bat
 
 ---
 
-## Future Enhancements
+## Future Enhancements (Potential Extensions)
 
-### 🚀 Phase 2: Production Hardening (Q2 2026)
-- [ ] **Apache Airflow**: Replace batch scheduler with DAG orchestration
-  - Automated job dependencies
-  - Retry logic & alerting
-  - Job visualization
+### 📈 Short-term (Next Release)
+- **Incremental dbt Models**: Replace full refresh with incremental builds (faster runs)
+- **Additional Mart Tables**: 
+  - `mart_customer_lifetime_value`: Repeat purchase patterns
+  - `mart_payment_method_analysis`: Payment method adoption
+  - `mart_city_growth`: City-wise trends over time
+- **Data Quality Alerts**: Notify if null counts exceed threshold
+- **Extended Monitoring**: Latency histogram, error breakdown by stage
 
-- [ ] **Monitoring & Observability**
-  - Prometheus metrics export
-  - Grafana dashboards (latency, throughput, errors)
-  - PagerDuty alerts on SLA breaches
+### 🔄 Mid-term (Production Scale-up)
+- **Apache Airflow Orchestration**: Schedule dbt runs, handle dependencies
+- **Prometheus + Grafana**: Production-grade metrics dashboards
+- **Great Expectations**: Advanced data quality framework with profiling
+- **GitHub Actions CI/CD**: Automated dbt tests on PR, production deployments
+- **dbt Cloud**: Managed scheduling & documentation hosting
 
-- [ ] **Data Quality**
-  - Great Expectations framework
-  - Anomaly detection (zscore on revenue)
-  - Schema evolution handling
+### ☁️ Long-term (Cloud Migration)
+- **GCP BigQuery**: Migrate data warehouse for unlimited scale
+- **Pub/Sub**: Replace Kafka for managed streaming
+- **Dataflow**: Replace PySpark for serverless processing
+- **Terraform**: Infrastructure as code for cloud deployment
 
-- [ ] **CI/CD Pipeline**
-  - GitHub Actions for dbt test automation
-  - Automated deployments on PR merge
-  - Data lineage tracking (dbt Cloud)
-
-### ☁️ Phase 3: Cloud Migration (Q3 2026)
-- [ ] **Google Cloud Platform**
-  - Kafka → Pub/Sub
-  - PySpark → Dataflow
-  - PostgreSQL → BigQuery
-  - dbt → dbt Cloud (managed)
-
-- [ ] **Databricks Integration** (Alternative)
-  - Lakehouse architecture
-  - Delta Lake ACID transactions
-  - Unified analytics platform
-
-### 📊 Phase 4: Advanced Analytics (Q4 2026)
-- [ ] **ML Pipeline**
-  - Demand forecasting (Prophet, ARIMA)
-  - Anomaly detection in order patterns
-  - Customer segmentation (K-means)
-
-- [ ] **Real-Time BI**
-  - Streaming aggregations (Tableau/Looker)
-  - Sub-second query latency
-  - Mobile app integration
+### 🤖 Advanced Features (if scaling to millions of events)
+- **ML Predictions**: Demand forecasting, customer churn detection
+- **Real-Time BI**: Streaming aggregations to dashboards
+- **Data Lineage**: Track transformations end-to-end
+- **Cost Optimization**: Query optimization, automatic partitioning
 
 ---
 
