@@ -19,3 +19,8 @@ Thumbs.db
 
 
 spark_checkpoints
+start_monitor.bat
+start_pipeline.bat
+start_spark.bat
+run_dbt.bat
+C:\Users\Vishal Chaurasia\Documents\GitHub\realtime-order-analytics-DEP\old_bat

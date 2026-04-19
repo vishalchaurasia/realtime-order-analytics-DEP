@@ -9,7 +9,7 @@ import time
 import uuid
 import random
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from kafka import KafkaProducer
 from faker import Faker
 from dotenv import load_dotenv
@@ -67,7 +67,7 @@ def generate_order_event() -> dict:
         "status":      status,
         "city":        random.choice(CITIES),
         "payment_method": random.choice(["UPI", "Credit Card", "Debit Card", "COD", "Net Banking"]),
-        "event_ts":    datetime.utcnow().isoformat(),
+        "event_ts":    datetime.now(timezone.utc).replace(tzinfo=None).isoformat(),
     }
 
 
